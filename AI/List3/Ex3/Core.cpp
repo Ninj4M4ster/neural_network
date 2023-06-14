@@ -102,7 +102,7 @@ double Core::Sigmoid(double x) {
 }
 
 double Core::Relu(double x) {
-  return std::max(0.0, std::min(x, 1.0));
+  return std::max(0.0, x);
 }
 
 void Core::Normalize(double & x1, double & x2) {
@@ -142,13 +142,13 @@ double Core::Derivative(double x) {
     case ActivationFunctions::ReLU: {
       if(x < 0.0)
         return 0.0;
-      return 1.1;
+      return 1.0;
     } case ActivationFunctions::sigmoid: {
       return Sigmoid(x) * (1.0 - Sigmoid(x));
     } default: {
       if(x < 0.0)
         return 0.0;
-      return 1.1;
+      return 1.0;
     }
   }
 }
@@ -207,20 +207,20 @@ void Core::train(std::vector<std::pair<double, double>> & data, std::vector<int>
     // update weights
     for(int j = 0; j < weights_.at(0).size(); j++) {
       for(int k = 0; k < weights_.at(0).at(j).size(); k++) {
-        weights_.at(0).at(j).at(k) -= input_to_hidden_errors_corrections.at(j).at(k);
+        weights_.at(0).at(j).at(k) += input_to_hidden_errors_corrections.at(j).at(k);
       }
     }
 
     for(int k = 0; k < weights_.at(1).at(0).size(); k++) {
-      weights_.at(1).at(0).at(k) -= hidden_to_output_errors.at(k);
+      weights_.at(1).at(0).at(k) += hidden_to_output_errors.at(k);
     }
 
     // update bias
     for(int j = 0; j < offsets_.at(0).size(); j++) {
-      offsets_.at(0).at(j) -= learning_coefficient_ * input_to_hidden_errors.at(j);
+      offsets_.at(0).at(j) += learning_coefficient_ * input_to_hidden_errors.at(j);
     }
 
-    offsets_.at(1).at(0) -= learning_coefficient_ * output_error;
+    offsets_.at(1).at(0) += learning_coefficient_ * output_error;
   }
 }
 
