@@ -10,8 +10,15 @@ class Core {
  private:
   static constexpr auto kFileName = "weights.txt";
   // weights and offsets of the network
-  std::vector<std::vector<double>> weights_ = std::vector<std::vector<double>>();
-  std::vector<std::vector<double>> offsets_ = std::vector<std::vector<double>>();
+  std::vector<std::vector<std::vector<double>>> weights_ =
+      std::vector<std::vector<std::vector<double>>>(
+          2,  // hidden layer and output layer
+          std::vector<std::vector<double>>()
+          );
+  std::vector<std::vector<double>> offsets_ =
+      std::vector<std::vector<double>>(2, std::vector<double>());
+
+  double learning_coefficient_ = 1.0;
 
   enum ActivationFunctions {
     ReLU,
@@ -31,25 +38,31 @@ class Core {
   // utilities
   static double Sigmoid(double x);
   static double Relu(double x);
+  void loadWeights();
 
-  void saveWeights();
+  void Normalize(double & x1, double & x2);
+  double Activate(double x);
+  double Derivative(double x);
 
  public:
   // constructor
   Core();
 
   // utility functions
-  void loadWeights();
   void chooseRelu();
   void chooseSigmoid();
   void chooseNoneNormalization();
   void chooseL1Normalization();
   void chooseL2Normalization();
 
+  void saveWeights();
+
+  void setLearningCoefficient(double x);
+
   // core functions
-  void train(std::vector<std::pair<double, double>> data, std::vector<double> labels);
-  double predict(double x1, double x2);
-  double evaluate(std::vector<std::pair<double, double>> data, std::vector<double> labels);
+  void train(std::vector<std::pair<double, double>> & data, std::vector<int> & labels);
+  int predict(double x1, double x2);
+  double evaluate(std::vector<std::pair<double, double>> & data, std::vector<int> & labels);
 };
 
 }  // namespace core
